@@ -7,6 +7,8 @@ dependencies:
   override:
     - mkdir -p $CIRCLE_ARTIFACTS/out
     - docker run -it --rm -e "LOGGING=DEBUG" --volume $CIRCLE_ARTIFACTS/out:/out pcrofts/goscratch build --package github.com/margic/AugustMeetup/talk-vote
+    # Build the image
+    - docker build -t pcrofts/talk-vote $CIRCLE_ARTIFACTS/out
 
 test:
   override:
@@ -18,8 +20,6 @@ deployment:
   hub:
     branch: master
     commands:
-      # Build the builder image
-      - docker build -t pcrofts/talk-vote $CIRCLE_ARTIFACTS/out
+      # push image to docker hub
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      # no need to push every time for testing build.
       - docker push pcrofts/talk-vote
